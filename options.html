@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=utf-8>
+        <title>Cyber Illusion Generator</title>
+        <link rel="stylesheet" href="css/layui.css">
+    </head>
+
+    <body>
+        <div id="special_reply_setting">
+            <p id="special_reply_title">特殊回复列表（如发送内容无法匹配该列表则使用聊天机器人）</p>
+            <form class="layui-form" id="config-form" action="">
+                
+            </form>
+            <button id="add_special_reply_rule_btn" class="layui-btn">添加</button>
+            <button id="save_btn" class="layui-btn">保存</button>
+        </div>
+    </body>
+    <script src="js/layui.js"></script>
+    <script src="js/options.js"></script>
+
+    <!-- DOM Templates for cloning -->
+    <div class="layui-form-item config-form-item" hidden>
+        <div class="layui-inline">
+            <label class="layui-form-label">对象昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="chat-nickname" placeholder="请输入" autocomplete="off" class="layui-input chat-nickname">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">发送内容</label>
+            <div class="layui-input-inline">
+                <input type="text" name="send-pattern" placeholder="请输入" autocomplete="off" class="layui-input send-pattern">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">回复内容</label>
+            <div class="layui-input-inline">
+                <input type="text" name="reply-context" placeholder="请输入" autocomplete="off" class="layui-input reply-content">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button type="button" id="row_delete_btn" class="layui-btn row-delete-btn">删除</button>
+        </div>
+    </div>
+</html>
