@@ -1,15 +1,15 @@
 // 请求拦截有点复杂，目前代码有问题，暂未启用，如果有人愿意用的话我就搞一下，或者你们可以提个PR
-chrome.webRequest.onBeforeRequest.addListener(
-    function(details) {
-        //return {redirectUrl: chrome.extension.getURL("returns.js")}; //returns.js是你要替换的js脚本
-        console.log('have a cancel!');
-        return { cancel: true }
-    },
-    {
-        urls: ["https://api.vc.bilibili.com/web_im/v1/web_im/send_msg"]
-    },
-    ["blocking"]
-);
+// chrome.webRequest.onBeforeRequest.addListener(
+//     function(details) {
+//         //return {redirectUrl: chrome.extension.getURL("returns.js")}; //returns.js是你要替换的js脚本
+//         console.log('have a cancel!');
+//         return { cancel: true }
+//     },
+//     {
+//         urls: ["https://api.vc.bilibili.com/web_im/v1/web_im/send_msg"]
+//     },
+//     ["blocking"]
+// );
 
 var httpRequest =new XMLHttpRequest();
 var chatbotUrl = 'https://api.qingyunke.com/api.php?key=free&appid=0&msg=';
@@ -35,6 +35,7 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     var action = req.action;
     var sendMsg = req.sendMsg;
     var nickname = req.nickname;
+    // 聊天输入框会附带一个不可见字符，但我这边写\u2000-\uffff都没过滤掉，就先用下面这条过滤规则吧
     var rule = /([\x21-\x7e\u3000-\uffff]+)/
     if (!sendMsg) {
         sendResponse('');
@@ -42,12 +43,10 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
         var replyConfigList = specialReplyConfig[nickname];
         console.log(JSON.stringify(replyConfigList));
         var replyConfigObj = replyConfigList?.find(o => {
-            var str1 = o.sendPattern.trim().match(rule)[1]
-            var str2 = sendMsg.trim().match(rule)[1]
-            console.log(str1, str2, str1.length, str2.length, o.sendPattern == sendMsg);
+            var str1 = o.sendPattern.trim().match(rule)[1];
+            var str2 = sendMsg.trim().match(rule)[1];
             return str1 == str2; 
         });
-        debugger;
         console.log(JSON.stringify(replyConfigObj));
         if (!!replyConfigObj) {
             var replyList = replyConfigObj.replyContent.split(';');
@@ -61,7 +60,10 @@ chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
             httpRequest.onreadystatechange = function () {
                 if (httpRequest.readyState == 4 && httpRequest.status == 200) {
                     var data = httpRequest.responseText;
-                    sendResponse(JSON.parse(data).content);
+                    // 目前使用的聊天机器人会自称“菲菲”，这边会将菲菲替换成聊天对象昵称前两个字
+                    var respContent = JSON.parse(data).content;
+                    var nicknameHead = nickname.length >= 2 ? nickname.substr(0, 2) : nickname;
+                    sendResponse(respContent.replace('菲菲', nicknameHead));
                 }
             };
         }
